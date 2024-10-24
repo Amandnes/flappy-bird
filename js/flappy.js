@@ -83,8 +83,15 @@ function Passaro(alturaJogo) {
     this.getY = () => parseInt(this.elemento.style.bottom.split('px')[0])
     this.setY = y => this.elemento.style.bottom = `${y}px`
 
-    window.onkeydown = e => voando = true
-    window.onkeyup = e => voando = false
+    window.onkeydown = e => {
+        this.elemento.style.transform = 'rotate(-20deg)';
+        voando = true
+    }
+
+    window.onkeyup = e => {
+        this.elemento.style.transform = 'rotate(20deg)';
+         voando = false
+    }
 
     this.animar = () => {
         const novoY = this.getY() + (voando ? 8 : -5)
@@ -147,6 +154,14 @@ function colidiu(passaro, barreiras) {
     return colidiu
 }
 
+function mostraPlacarFimDeJogo(pontuacao) {
+    const placar = document.querySelector('.fim-de-jogo');
+    const pontos = document.querySelector('.pontos');
+
+    placar.classList.add('classe-animacao');
+    pontos.textContent = pontuacao.toString();
+}
+
 function FlappyBird() {
     let pontos = 0
 
@@ -169,10 +184,25 @@ function FlappyBird() {
             passaro.animar()
 
             if(colidiu(passaro, barreiras)) {
-                 clearInterval(temporizador)
+                mostraPlacarFimDeJogo(pontos);
+                clearInterval(temporizador)
             }
         }, 20)
     }
 }
 
-new FlappyBird().start()
+function reiniciarJogo() {
+    const areaDoJogo = document.querySelector('[wm-flappy]');
+    const fimDeJogo = document.querySelector('.fim-de-jogo');
+
+    // Esconde o placar e remove o conteúdo presente na área de jogo
+    fimDeJogo.classList.remove('classe-animacao');
+    areaDoJogo.innerHTML = '';
+
+    // Inicia uma nova instância do jogo
+    instanciaDoJogo = new FlappyBird();
+    instanciaDoJogo.start();
+}
+
+var instanciaDoJogo = new FlappyBird();
+instanciaDoJogo.start();
